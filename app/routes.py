@@ -1,6 +1,6 @@
-from flask import render_template
+from flask import render_template, flash, redirect
 from app import app
-from app.forms import LoginForm
+from app.forms import LoginForm, RegisterForm
 
 
 
@@ -14,11 +14,20 @@ def home():
     }
     return render_template('index.jinja', trainers=pokedex_posts['trainers'], pokemon=pokedex_posts['pokemon'])
 
-@app.route('/signin/')
+@app.route('/signin/', methods=['GET', 'POST'])
 def sign_in():
-   form = LoginForm()
-   return render_template('signin.jinja', form=form)
+   login_form = LoginForm()
+   if login_form.validate_on_submit():
+       flash(f'{login_form.email.data} logged in!', category='success')
+       return redirect('/')
+   return render_template('signin.jinja', form=login_form)
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('register.jinja')
+    form = RegisterForm()
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        trainer_name = form.trainer_name.data
+        flash(f'{first_name if first_name else trainer_name} registered', category='success')
+        return redirect('/')
+    return render_template('register.jinja', form=form)

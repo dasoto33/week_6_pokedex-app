@@ -2,6 +2,48 @@
 
 {% block content %}
 
-    <h3>Create Account</h3>
+    <h2>Create Account</h2>
+    <form action="" method="POST" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.first_name.label }}<br>
+        {{ form.first_name(size=32) }}
+
+    </p>
+    <p>
+        {{ form.trainer_name.label }}<br>
+        {{ form.trainer_name(size=32) }}
+            {% for error in form.trainer_name.errors %}
+        <span>{{ error }}</span>
+        {%endfor%}
+
+    </p>
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(size=32) }}
+            {% for error in form.email.errors %}
+        <span>{{ error }}</span>
+        {%endfor%}
+
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(size=32) }}
+            {% for error in form.password.errors %}
+        <span>{{ error }}</span>
+        {%endfor%}
+    </p>
+    <p>
+        {{ form.verify_password.label }}<br>
+        {{ form.verify_password(size=32) }}
+            {% for error in form.email.errors %}
+        <span>{{ error }}</span>
+        {%endfor%}
+    </p>
+    <p>
+
+    </p>
+    <p>{{ form.submit() }}</p>
+    </form>
 
 {% endblock  %}
