@@ -1,4 +1,5 @@
 from flask import render_template, flash, redirect
+from flask_login import login_user, logout_user
 from app import app
 from app.forms import LoginForm, RegisterForm
 from app.models import Trainer
@@ -21,6 +22,7 @@ def sign_in():
        email = login_form.email.data
        trainer = Trainer.query.filter_by(email=email).first()
        if trainer and trainer.check_password(login_form.password.data):
+            login_user(trainer.trainer_id)
             flash(f'{login_form.email.data} logged in!', category='success')
             return redirect('/')
        else:
@@ -31,13 +33,18 @@ def sign_in():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        first_name = form.first_name.data
-        trainer_name = form.trainer_name.data
-        email = form.email.data
-        password = form.password.data
-        trainer = Trainer(first_name=first_name, trainer_name=trainer_name, email=email)
-        trainer.hash_password(form.password.data)
-        trainer.commit()
-        flash(f'{first_name if first_name else trainer_name} registered', category='success')
-        return redirect('/')
+        trainer_info = {
+            'first_name' : form.first_name.data,
+            'trainer_name' : form.trainer_name.data,
+            'email' : form.email.data
+        }
+        try:
+            trainer = Trainer()
+            trainer.from_dict(trainer_info)
+            trainer.hash_password(form.password.data)
+            trainer.commit()
+            flash(f'{trainer.first_name if trainer.first_name else trainer.trainer_name} registered', category='success')
+            return redirect('/')
+        except:
+            flash(f'Trainer Name or Email is already in use, please try again.', category='warning')
     return render_template('register.jinja', form=form)

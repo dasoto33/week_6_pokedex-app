@@ -1,14 +1,23 @@
-from app import db
+from app import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
+@login_manager.user_loader
+def load_trainer(id):
+    return Trainer.query.get(str(id))
 
-class Trainer(db.Model):
+class Trainer(UserMixin, db.Model):
     trainer_id = db.Column(db.Integer, primary_key = True)
     first_name = db.Column(db.String(15))
     trainer_name = db.Column(db.String(20), nullable = False, unique = True)
     email = db.Column(db.String(70), nullable = False, unique = True)
     password_hash = db.Column(db.String(), nullable = False)
     poke_relate = db.relationship('Pokemon', backref = 'owner', lazy = True)
+
+
+    def from_dict(self, trainer_obj):
+        for attribute, v in trainer_obj.items():
+            setattr(self, attribute, v)
 
     def __repr__(self):
         return f'<TRAINER: {self.trainer_name}'

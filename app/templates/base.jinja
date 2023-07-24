@@ -24,6 +24,9 @@
             </div>
         {% endfor %}
     {% endwith %}
+    {% if current_trainer.is_authenticated %}
+        {{ current_trainer.trainer_name}}
+    {% endif %}
     {% block content %}{% endblock %}
 
 </body>
